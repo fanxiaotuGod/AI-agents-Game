@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker";
 
 // For demo purposes. In a real app, you'd have real user data.
-const NAME = faker.person.firstName();
+const NAME = "Leah";
 
 export default function App() {
   const messages = useQuery(api.messages.list);
