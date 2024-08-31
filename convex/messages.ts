@@ -16,8 +16,6 @@ export const send = mutation({
   handler: async (ctx, { body, author }) => {
     // Send a new message.
     await ctx.db.insert("messages", { body, author });
-<<<<<<< HEAD
-=======
 
     if (body.indexOf("@gpt") !== -1) {
       // Fetch the latest n messages to send as context.
@@ -41,6 +39,5 @@ export const update = internalMutation({
   args: { messageId: v.id("messages"), body: v.string() },
   handler: async (ctx, { messageId, body }) => {
     await ctx.db.patch(messageId, { body });
->>>>>>> 46f376e (rebased to use different starter code)
   },
 });
