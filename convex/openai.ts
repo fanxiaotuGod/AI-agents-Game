@@ -24,6 +24,7 @@ export const chat = internalAction({
   // args: { messages: v.array(v.string()), messageId: v.id("messages"), id: v.string() },
   handler: async(ctx,  { messages, messageId, id} : ChatParams ) => {
     const apiKey = process.env.OPENAI_API_KEY!;
+    const openai = new OpenAI({apiKey});
 
     try {
       const stream = await openai.chat.completions.create({
@@ -32,7 +33,8 @@ export const chat = internalAction({
         messages: [
           {
             role: "system",
-            content: ids.get(id),          },
+            content: ids.get(id) || "",          
+          },
           ...messages.map(({ body, author }: { body: string, author: string }) => ({
             role:
               author === id ? ("assistant" as const) : ("user" as const),
