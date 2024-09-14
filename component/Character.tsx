@@ -13,38 +13,37 @@ const Character: React.FC<CharacterProps> = ({ spriteSheet }) => {
   const [, forceUpdate] = useState<number>(0); // Used to force a re-render
   const animationRef = useRef<number>();
   const keysPressed = useRef<{ [key: string]: boolean }>({});
-  const speed = 0.3;
+  const speed = 0.25;
 
   const moveCharacter = () => {
-    // const step = speed;
-    const step = 1;
+    const step = speed;
 
     // Modify the global variable directly
     if (keysPressed.current['ArrowUp'] || keysPressed.current['w']) {
       setDirection('up');
       const top = Math.max(globalPosition.top - step, 0);
-      if (!collisionDetection(top, globalPosition.left)) {
+      if (!collisionDetection(top*4, globalPosition.left*4)) {
         globalPosition.top = top;
       }
     }
     if (keysPressed.current['ArrowDown'] || keysPressed.current['s']) {
       setDirection('down');
       const top = Math.min(globalPosition.top + step, 100);
-      if (!collisionDetection(top, globalPosition.left)) {
+      if (!collisionDetection(top*4, globalPosition.left*4)) {
         globalPosition.top = top;
       }
     }
     if (keysPressed.current['ArrowLeft'] || keysPressed.current['a']) {
       setDirection('left');
       const left = Math.max(globalPosition.left - step, 0);
-      if (!collisionDetection(globalPosition.top, left)) {
+      if (!collisionDetection(globalPosition.top*4, left*4)) {
         globalPosition.left = left;
       }
     }
     if (keysPressed.current['ArrowRight'] || keysPressed.current['d']) {
       setDirection('right');
       const left = Math.min(globalPosition.left + step, 100);
-      if (!collisionDetection(globalPosition.top, left)) {
+      if (!collisionDetection(globalPosition.top*4, left*4)) {
         globalPosition.left = left;
       }
     }
@@ -111,39 +110,59 @@ const Character: React.FC<CharacterProps> = ({ spriteSheet }) => {
   );
 };
 
-let map = Array.from({ length: 100 }, () => Array(100).fill(1));
+let map = Array.from({ length: 400 }, () => Array(400).fill(1));
 
-for (let i = 10; i < 90; i++) {
-  map[i][49] = 0;
-  map[i][50] = 0; // Vertical path
-  map[i][51] = 0; // Vertical path 
-  map[i][52] = 0; // Vertical path
-  if (i <= 49) {
-    if (i > 10) {
-      map[71][i] = 0; // 
-      map[72][i] = 0; // bottom left Horizontal path
-      map[73][i] = 0; // Horizontal path
-      map[74][i] = 0; // Horizontal path
+for (let i = 40; i < 360; i++) {
+  for (let j = 190; j < 212; j++) {
+    map[i][j] = 0; // Vertical path
+  }
+  if (i <= 196) {
+    if (i >= 40) {
+      for (let j = i; j < i + 16; j++) {
+        map[285][j] = 0; // bottom left Horizontal path
+        map[286][j] = 0; // Horizontal path
+        map[287][j] = 0; // Horizontal path
+        map[288][j] = 0; // Horizontal path
+        map[289][j] = 0; // Horizontal path
+        map[290][j] = 0; // Horizontal
+      }
     } 
-    if (i >= 22) { 
-      map[29][i] = 0; // top left Horizontal path
-      map[30][i] = 0; // top left Horizontal path 
-      map[31][i] = 0; // Horizontal path
-      map[32][i] = 0; // Horizontal path
+    if (i >= 88) { 
+      for (let j = i; j < i + 16; j++) {
+        map[115][j] = 0; // top left Horizontal path
+        map[116][j] = 0; // top left Horizontal path
+        map[117][j] = 0; // top left Horizontal path
+        map[118][j] = 0; // Horizontal path
+        map[119][j] = 0; // Horizontal path
+        map[120][j] = 0; // Horizontal
+        map[121][j] = 0; // Horizontal
+      }
     }
   }
-  if (i >= 51) {
-      if (i <= 85) {
-        map[74][i] = 0; // bottom right Horizontal path
-        map[75][i] = 0; // bottom right Horizontal path
-        map[76][i] = 0; // Horizontal path
-        map[77][i] = 0; // Horizontal
+  if (i >= 204) {
+    if (i <= 340) {
+      for (let j = i; j < i + 16; j++) {
+        map[294][j] = 0; // bottom right Horizontal path
+        map[295][j] = 0; // bottom right Horizontal path
+        map[296][j] = 0; // bottom right Horizontal path
+        map[297][j] = 0; // bottom right Horizontal path
+        map[298][j] = 0; // bottom right Horizontal path
+        map[299][j] = 0; // bottom right Horizontal path
+        map[300][j] = 0; // bottom right Horizontal path
+        map[301][j] = 0; // bottom right Horizontal path
+        map[302][j] = 0; // bottom right Horizontal path
       }
-      if (i <= 87) {
-      map[37][i] = 0; // top right Horizontal path
-      map[38][i] = 0; // top right Horizontal path
-      map[39][i] = 0; // Horizontal path
-      map[40][i] = 0; // Horizontal path
+    }
+    if (i <= 330) {
+      for (let j = i; j < i + 16; j++) {
+        map[148][j] = 0; // top right Horizontal path
+        map[149][j] = 0; // top right Horizontal path
+        map[150][j] = 0; // Horizontal path
+        map[151][j] = 0; // Horizontal path
+        map[152][j] = 0; // Horizontal path
+        map[153][j] = 0; // Horizontal path
+        map[154][j] = 0; // Horizontal path
+      }
     }
   }
 }
