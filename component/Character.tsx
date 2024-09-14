@@ -1,99 +1,79 @@
+// Character.tsx
 import React, { useState, useEffect, useRef } from 'react';
+import { globalPosition } from './globals'; // Import the global variable
 
 interface CharacterProps {
-  spriteSheet: Record<string, string[]>; // Object containing directions with corresponding sprite images
+  spriteSheet: Record<string, string[]>;
 }
 
 const Character: React.FC<CharacterProps> = ({ spriteSheet }) => {
   const [currentFrame, setCurrentFrame] = useState<number>(0);
-  const [direction, setDirection] = useState<string>('down'); // Initial direction
-  const [isMoving, setIsMoving] = useState<boolean>(false); // State to control movement
-  const [position, setPosition] = useState<{ top: number; left: number }>({ top: 50, left: 50 }); // Character position
-  const animationRef = useRef<number>(); // Ref to store animation frame id
-  const keysPressed = useRef<{ [key: string]: boolean }>({}); // Ref to store currently pressed keys
-
-  // Define the speed as a constant or state
-  const speed = 0.3; // Adjust this value to change the character speed (higher is faster, lower is slower)
-
-  const preloadImages = (images: string[]) => {
-    images.forEach((image) => {
-      const img = new Image();
-      img.src = image;
-    });
-  };
-
-  useEffect(() => {
-    // Preload all images
-    Object.values(spriteSheet).forEach((frames) => preloadImages(frames));
-  }, [spriteSheet]);
+  const [direction, setDirection] = useState<string>('down');
+  const [isMoving, setIsMoving] = useState<boolean>(false);
+  const [, forceUpdate] = useState<number>(0); // Used to force a re-render
+  const animationRef = useRef<number>();
+  const keysPressed = useRef<{ [key: string]: boolean }>({});
+  const speed = 0.3;
 
   const moveCharacter = () => {
-    const step = speed * 0.5; // Multiply the base step by the speed factor
+    const step = speed;
 
-    // Adjust position based on direction and currently pressed keys
+    // Modify the global variable directly
     if (keysPressed.current['ArrowUp'] || keysPressed.current['w']) {
       setDirection('up');
-      setPosition((prevPosition) => ({ ...prevPosition, top: Math.max(prevPosition.top - step, 0) }));
+      globalPosition.top = Math.max(globalPosition.top - step, 0);
     }
     if (keysPressed.current['ArrowDown'] || keysPressed.current['s']) {
       setDirection('down');
-      setPosition((prevPosition) => ({ ...prevPosition, top: Math.min(prevPosition.top + step, 100) }));
+      globalPosition.top = Math.min(globalPosition.top + step, 100);
     }
     if (keysPressed.current['ArrowLeft'] || keysPressed.current['a']) {
       setDirection('left');
-      setPosition((prevPosition) => ({ ...prevPosition, left: Math.max(prevPosition.left - step, 0) }));
+      globalPosition.left = Math.max(globalPosition.left - step, 0);
     }
     if (keysPressed.current['ArrowRight'] || keysPressed.current['d']) {
       setDirection('right');
-      setPosition((prevPosition) => ({ ...prevPosition, left: Math.min(prevPosition.left + step, 100) }));
+      globalPosition.left = Math.min(globalPosition.left + step, 100);
     }
 
-    animationRef.current = requestAnimationFrame(moveCharacter); // Request next frame
+    forceUpdate((prev) => prev + 1); // Force re-render to reflect the changes
+
+    animationRef.current = requestAnimationFrame(moveCharacter);
   };
 
   useEffect(() => {
     if (isMoving) {
-      animationRef.current = requestAnimationFrame(moveCharacter); // Start animation loop
+      animationRef.current = requestAnimationFrame(moveCharacter);
     } else {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current); // Stop animation loop
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     }
 
     return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current); // Cleanup on unmount
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [isMoving]); // Run effect when isMoving changes
+  }, [isMoving]);
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!keysPressed.current[event.key]) {
-        keysPressed.current[event.key] = true; // Track key press state
-        setIsMoving(true); // Start movement on key press
-      }
+    const handleKeyToggle = (event: KeyboardEvent, isKeyDown: boolean) => {
+      keysPressed.current[event.key] = isKeyDown;
+      setIsMoving(Object.values(keysPressed.current).some(Boolean));
     };
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      keysPressed.current[event.key] = false; // Clear key press state
-      if (!Object.values(keysPressed.current).some(Boolean)) {
-        setIsMoving(false); // Stop movement if no keys are pressed
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('keydown', (event) => handleKeyToggle(event, true));
+    window.addEventListener('keyup', (event) => handleKeyToggle(event, false));
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keydown', (event) => handleKeyToggle(event, true));
+      window.removeEventListener('keyup', (event) => handleKeyToggle(event, false));
     };
   }, []);
 
-  // Animate sprite frames
   useEffect(() => {
     let frameInterval: NodeJS.Timeout;
     if (isMoving) {
       frameInterval = setInterval(() => {
         setCurrentFrame((prevFrame) => (prevFrame + 1) % spriteSheet[direction].length);
-      }, 100); // Adjust speed of animation
+      }, 100);
     }
     return () => {
       clearInterval(frameInterval);
@@ -109,8 +89,8 @@ const Character: React.FC<CharacterProps> = ({ spriteSheet }) => {
         backgroundSize: 'cover',
         imageRendering: 'pixelated',
         position: 'absolute',
-        top: `${position.top}%`,
-        left: `${position.left}%`,
+        top: `${globalPosition.top}%`, // Use global variable
+        left: `${globalPosition.left}%`, // Use global variable
         transform: 'translate(-50%, -50%)',
         zIndex: 10,
       }}
