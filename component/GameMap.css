@@ -1,0 +1,9 @@
+.map-container {
+  width: 100vw; /* Full width of the viewport */
+  height: 100vh; /* Full height of the viewport */
+  background-image: url('/Assets/maps/map1.jpg'); /* Update the path to your actual map image */
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the image */
+  overflow: hidden; /* Hide overflow if needed */
+  position: relative; /* Positioning context for child elements */
+}
