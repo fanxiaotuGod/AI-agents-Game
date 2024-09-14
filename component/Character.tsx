@@ -16,24 +16,37 @@ const Character: React.FC<CharacterProps> = ({ spriteSheet }) => {
   const speed = 0.3;
 
   const moveCharacter = () => {
-    const step = speed;
+    // const step = speed;
+    const step = 1;
 
     // Modify the global variable directly
     if (keysPressed.current['ArrowUp'] || keysPressed.current['w']) {
       setDirection('up');
-      globalPosition.top = Math.max(globalPosition.top - step, 0);
+      const top = Math.max(globalPosition.top - step, 0);
+      if (!collisionDetection(top, globalPosition.left)) {
+        globalPosition.top = top;
+      }
     }
     if (keysPressed.current['ArrowDown'] || keysPressed.current['s']) {
       setDirection('down');
-      globalPosition.top = Math.min(globalPosition.top + step, 100);
+      const top = Math.min(globalPosition.top + step, 100);
+      if (!collisionDetection(top, globalPosition.left)) {
+        globalPosition.top = top;
+      }
     }
     if (keysPressed.current['ArrowLeft'] || keysPressed.current['a']) {
       setDirection('left');
-      globalPosition.left = Math.max(globalPosition.left - step, 0);
+      const left = Math.max(globalPosition.left - step, 0);
+      if (!collisionDetection(globalPosition.top, left)) {
+        globalPosition.left = left;
+      }
     }
     if (keysPressed.current['ArrowRight'] || keysPressed.current['d']) {
       setDirection('right');
-      globalPosition.left = Math.min(globalPosition.left + step, 100);
+      const left = Math.min(globalPosition.left + step, 100);
+      if (!collisionDetection(globalPosition.top, left)) {
+        globalPosition.left = left;
+      }
     }
 
     forceUpdate((prev) => prev + 1); // Force re-render to reflect the changes
@@ -97,5 +110,46 @@ const Character: React.FC<CharacterProps> = ({ spriteSheet }) => {
     />
   );
 };
+
+let map = Array.from({ length: 100 }, () => Array(100).fill(1));
+
+for (let i = 10; i < 90; i++) {
+  map[i][49] = 0;
+  map[i][50] = 0; // Vertical path
+  map[i][51] = 0; // Vertical path 
+  map[i][52] = 0; // Vertical path
+  if (i <= 49) {
+    if (i > 10) {
+      map[71][i] = 0; // 
+      map[72][i] = 0; // bottom left Horizontal path
+      map[73][i] = 0; // Horizontal path
+      map[74][i] = 0; // Horizontal path
+    } 
+    if (i >= 22) { 
+      map[29][i] = 0; // top left Horizontal path
+      map[30][i] = 0; // top left Horizontal path 
+      map[31][i] = 0; // Horizontal path
+      map[32][i] = 0; // Horizontal path
+    }
+  }
+  if (i >= 51) {
+      if (i <= 85) {
+        map[74][i] = 0; // bottom right Horizontal path
+        map[75][i] = 0; // bottom right Horizontal path
+        map[76][i] = 0; // Horizontal path
+        map[77][i] = 0; // Horizontal
+      }
+      if (i <= 87) {
+      map[37][i] = 0; // top right Horizontal path
+      map[38][i] = 0; // top right Horizontal path
+      map[39][i] = 0; // Horizontal path
+      map[40][i] = 0; // Horizontal path
+    }
+  }
+}
+
+function collisionDetection(top: number, left: number) {
+  return map[top][left] === 1; // Check if tile is a wall
+}
 
 export default Character;
