@@ -1,6 +1,7 @@
 // Character.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { globalPosition } from './globals'; // Import the global variable
+import { NPCs } from '../convex/openai';
 
 interface CharacterProps {
   spriteSheet: Record<string, string[]>;
@@ -112,6 +113,14 @@ const Character: React.FC<CharacterProps> = ({ spriteSheet }) => {
 
 let map = Array.from({ length: 400 }, () => Array(400).fill(1));
 
+
+// for (let i = 240; i < 264; i++) {
+//   for (let j = 116; j < 140; j++) {
+//     map[j][i] = 6; // NPC
+//   }
+// }
+
+
 for (let i = 40; i < 360; i++) {
   for (let j = 190; j < 212; j++) {
     map[i][j] = 0; // Vertical path
@@ -168,7 +177,27 @@ for (let i = 40; i < 360; i++) {
 }
 
 function collisionDetection(top: number, left: number) {
-  return map[top][left] === 1; // Check if tile is a wall
+  npc = NPCs[0];
+  switch (map[top][left]) {
+    case 0 : return false; // No collision
+    case 1 : return true; // Check if tile is a wall
+    default : {npc = NPCs[map[top][left] - 1]; return true;} // Check if tile is an NPC
+  }
+
+  // if (top < 0 || left < 0 || top >= 400 || left >= 400) 
+  //     return true; // Check if out of bounds
+  // if ( map[top][left] === 1) {
+  //   return true; // Check if tile is a walldd
+  // }
+  // if (map[top][left] != 0 && map[top][left] != 1) {
+  //   npc = NPCs[map[top][left] - 1];
+  //   return true; // Check if tile is an NPC
+  // }
+  // return false; // No collision
 }
 
 export default Character;
+var npc = NPCs[0];
+export function getNPC() {
+  return npc;
+}
